@@ -1,1 +1,1 @@
-# NFT_Social_Decentralized_App
+# NFT Social Decentralized App
