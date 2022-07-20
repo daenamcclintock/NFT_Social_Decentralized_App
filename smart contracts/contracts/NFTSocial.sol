@@ -40,14 +40,26 @@ contract NFTSocial {
         address _voter = msg.sender;
         bytes32 _category = postRegistry[_postId].categoryId;
         address _contributor = postRegistry[_postId].postOwner;
-        require (postRegistry[_postId].postOwner != _voter, "you cannot vote your own posts");
-        require (voteRegistry[_voter][_postId] == false, "Sender already voted in this post");
-        require (validateReputationChange(_voter,_category,_reputationAdded)==true, "This address cannot add this amount of reputation points");
+        require (postRegistry[_postId].postOwner != _voter, "User cannot vote on their own post");
+        require (voteRegistry[_voter][_postId] == false, "User already voted on this post");
+        require (validateReputationChange(_voter,_category,_reputationAdded) == true, "This wallet address cannot add this amount of reputation points");
         postRegistry[_postId].votes += 1;
         reputationRegistry[_contributor][_category] += _reputationAdded;
         voteRegistry[_voter][_postId] = true;
         emit Voted(_postId, _contributor, _voter, reputationRegistry[_contributor][_category], reputationRegistry[_voter][_category], postRegistry[_postId].votes, true, _reputationAdded);
     }
 
-
+    // Function to allow "disliking" or "downvoting" a post
+    function voteDown(bytes32 _postId, uint8 _reputationTaken) external {
+        address _voter = msg.sender;
+        bytes32 _category = postRegistry[_postId].categoryId;
+        address _contributor = postRegistry[_postId].postOwner;
+        require (postRegistry[_postId].postOwner != _voter, "User cannot vote on their own post");
+        require (voteRegistry[_voter][_postId] == false, "User already voted on this post");
+        require (validateReputationChange(_voter,_category,_reputationTaken) == true, "This wallet address cannot take this amount of reputation points");
+        postRegistry[_postId].votes >= 1 ? postRegistry[_postId].votes -= 1 : postRegistry[_postId].votes = 0;
+        reputationRegistry[_contributor][_category] >= _reputationTaken ? reputationRegistry[_contributor][_category] -= _reputationTaken : reputationRegistry[_contributor][_category] = 0;
+        voteRegistry[_voter][_postId] = true;
+        emit Voted(_postId, _contributor, _voter, reputationRegistry[_contributor][_category], reputationRegistry[_voter][_category], postRegistry[_postId].votes, false, _reputationTaken);
+    }
 }
