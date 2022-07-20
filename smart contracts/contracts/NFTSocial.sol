@@ -2,14 +2,14 @@
 pragma solidity 0.8.9;
 
 contract NFTSocial {
-
+    event PostCreated (bytes32 indexed postId, address indexed postOwner, bytes32 indexed parentId, bytes32 contentId, bytes32 categoryId);
     event ContentAdded (bytes32 indexed contentId, string contentUri);
     event Voted (bytes32 indexed postId, address indexed postOwner, address indexed voter, uint80 reputationPostOwner, uint80 reputationVoter, int40 postVotes, bool up, uint8 reputationAmount);
     
-    // data structure for a post
+    // Data structure for a post
     struct post {
         address postOwner;
-        bytes32 parentPost; // used to incorporate commenting on a post
+        bytes32 parentPost; // Used to incorporate commenting on a post
         bytes32 contentId;
         int40 votes;
         bytes32 categoryId;
@@ -61,5 +61,16 @@ contract NFTSocial {
         reputationRegistry[_contributor][_category] >= _reputationTaken ? reputationRegistry[_contributor][_category] -= _reputationTaken : reputationRegistry[_contributor][_category] = 0;
         voteRegistry[_voter][_postId] = true;
         emit Voted(_postId, _contributor, _voter, reputationRegistry[_contributor][_category], reputationRegistry[_voter][_category], postRegistry[_postId].votes, false, _reputationTaken);
+    }
+
+    // Function to validate the reputation change of a particular user in a particular post category
+    function validateReputationChange(address _sender, bytes32 _categoryId, uint8 _reputationAdded) internal view returns (bool _result) {
+        uint80 _reputation = reputationRegistry[_sender][_categoryId];
+        if (_reputation < 2) {
+            _reputationAdded == 1 ? _result = true : _result = false; // if the sender has a reputation of 0 in that category, do not validate
+        }
+        else {
+            2**_reputationAdded <= _reputation ? _result = true : _result = false; // if 2^1 is less than reputation of the sender in that category, validate, else do not
+        }
     }
 }
