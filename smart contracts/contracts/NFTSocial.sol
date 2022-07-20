@@ -84,20 +84,24 @@ contract NFTSocial {
         emit CategoryCreated(_category, _category);
     }
 
-    // ***** GET Functions *****
+    // ***** GET Functions ***** (no gas used)
 
+    // Function to get the content of the post
     function getContent(bytes32 _contentId) public view returns (string memory) {
         return contentRegistry[_contentId];
     }
     
+    // Function to get the category to the post
     function getCategory(bytes32 _categoryId) public view returns(string memory) {   
         return categoryRegistry[_categoryId];
     }
 
+    // Function to get the reputation of a specified wallet address
     function getReputation(address _address, bytes32 _categoryID) public view returns(uint80) {   
         return reputationRegistry[_address][_categoryID];
     }
 
+    // function to get the full post and all the associated data
     function getPost(bytes32 _postId) public view returns(address, bytes32, bytes32, int72, bytes32) {   
         return (
             postRegistry[_postId].postOwner,
