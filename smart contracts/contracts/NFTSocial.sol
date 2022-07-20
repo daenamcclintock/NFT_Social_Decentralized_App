@@ -2,9 +2,12 @@
 pragma solidity 0.8.9;
 
 contract NFTSocial {
+
+    // Events
     event PostCreated (bytes32 indexed postId, address indexed postOwner, bytes32 indexed parentId, bytes32 contentId, bytes32 categoryId);
     event ContentAdded (bytes32 indexed contentId, string contentUri);
     event Voted (bytes32 indexed postId, address indexed postOwner, address indexed voter, uint80 reputationPostOwner, uint80 reputationVoter, int40 postVotes, bool up, uint8 reputationAmount);
+    event CategoryCreated (bytes32 indexed categoryId, string category);
     
     // Data structure for a post
     struct post {
@@ -72,5 +75,12 @@ contract NFTSocial {
         else {
             2**_reputationAdded <= _reputation ? _result = true : _result = false; // if 2^1 is less than reputation of the sender in that category, validate, else do not
         }
+    }
+
+    // Function to add a new category for post discussion
+    function addCategory(string calldata _category) external {
+        bytes32 _category = keccak256(abi.encode(_category));
+        categoryRegistry[_categoryId] = _category;
+        emit CategoryCreated(_category, _category);
     }
 }
